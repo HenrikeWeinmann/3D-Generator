@@ -22,7 +22,7 @@ public class EndlessTerrain : MonoBehaviour
     private int chunksVisibleInViewDst;
 
     private Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
-    private List<TerrainChunk> terrainChunkVisibleLastUpdate = new List<TerrainChunk>();
+    private static List<TerrainChunk> terrainChunkVisibleLastUpdate = new List<TerrainChunk>();
 
     private void Start()
     {
@@ -66,10 +66,6 @@ public class EndlessTerrain : MonoBehaviour
                 if (terrainChunkDictionary.ContainsKey(viewedChunkCoord))
                 {
                     terrainChunkDictionary[viewedChunkCoord].UpdateTerrainChunk();
-                    if (terrainChunkDictionary[viewedChunkCoord].isVisible())
-                    {
-                        terrainChunkVisibleLastUpdate.Add(terrainChunkDictionary[viewedChunkCoord]);
-                    }
                 }
                 else
                 {
@@ -169,6 +165,8 @@ public class EndlessTerrain : MonoBehaviour
                             lodMesh.RequestMesh(mapData);
                         }
                     }
+                    
+                    terrainChunkVisibleLastUpdate.Add(this);
                 }
 
                 SetVisible(visible);
