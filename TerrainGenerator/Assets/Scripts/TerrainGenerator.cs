@@ -1,15 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour {
     
     [Range(1,999)]
-    public int seed = 1234;
+    public static int seed = 1234;
     public int depth = 150;
-    private int width = 512;
-    private int height = 512;
+    
+    public int width = 512;
+    public int height = 512;
 
     private Terrain terrain;
     private float[] heightMap;
@@ -17,23 +19,25 @@ public class TerrainGenerator : MonoBehaviour {
     public PerlinNoiseParams perlinNoiseParams;
     public ErosionParams erosionParams;
 
-    private System.Random random;
+    private static System.Random random = new System.Random(seed);
 
     private int counter = 0;
 
     public AnimationCurve curve;
-
-
+    
     static int kernelWidth = 7;
-    // float[,] kernel = GaussianKernel(kernelWidth, 5f);
+    
+    
     float[,] kernel = CreateKernel(kernelWidth);
-
+    
+    public GameObject heightMapPlane;
+    
     void Start() {
+        random = new System.Random(seed);
         GenerateNoiseMap();
     }
 
     public void GenerateNoiseMap() {
-        random = new System.Random(seed);
         terrain = GetComponent<Terrain>();
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
     }
@@ -61,12 +65,16 @@ public class TerrainGenerator : MonoBehaviour {
     public void ErodeMap() {
         // GenerateNoiseMap();
         
-        int erosionIterationCount = 400_000;
-        for (int i = 0; i < erosionIterationCount; i++) {
+        // int erosionIterationCount = 400_000;
+        for (int i = 0; i < erosionParams.erosionIterationCount; i++) {
             Erode();
         }
         GaussianBlur(3, .5f);
         terrain.terrainData.SetHeights(0, 0, ConvertTo2D(heightMap));
+
+        Texture heightMapTexture = GenerateHeightMapTexture();
+        this.heightMapPlane.GetComponent<Renderer>().material.SetTexture("_BaseMap", heightMapTexture);
+
     }
 
 
@@ -76,7 +84,8 @@ public class TerrainGenerator : MonoBehaviour {
 
         heightMap = GeneratePerlinNoiseMap();
         // ApplyCurve();
-
+        Texture heightMapTexture = GenerateHeightMapTexture();
+        this.heightMapPlane.GetComponent<Renderer>().material.SetTexture("_BaseMap", heightMapTexture);
         terrainData.SetHeights(0, 0, ConvertTo2D(heightMap));
         return terrainData;
     }
@@ -87,7 +96,9 @@ public class TerrainGenerator : MonoBehaviour {
                 heightMap[x * width + y] = curve.Evaluate(heightMap[x * width + y]);
             }
         }
-        terrain.terrainData.SetHeights(0, 0, ConvertTo2D(heightMap));
+        terrain.terrainData.SetHeights(0,0, ConvertTo2D(heightMap));
+        Texture heightMapTexture = GenerateHeightMapTexture();
+        this.heightMapPlane.GetComponent<Renderer>().material.SetTexture("_BaseMap", heightMapTexture);
     }
 
     void OnGUI() {
@@ -229,20 +240,6 @@ public class TerrainGenerator : MonoBehaviour {
     }
 
 
-    // private float[] GaussianKernel(int radius, float sigma) {
-    //     float[] kernel = new float[radius * radius];
-    //     int foff = (-1) / 2;
-    //
-    //     for (int i = -radius; i <= radius; i++) {
-    //         for (int j = 0; j < radius; j++) {
-    //             kernel[radius + i] = (float)(Mathf.Exp(-(i * i) / (2 * sigma * sigma)) / (Math.PI * 2 * sigma * sigma));
-    //         }
-    //     }
-    //
-    //     return kernel;
-    // }
-
-
     public static float[,] GaussianKernel(int width, float weight) {
         float[,] kernel = new float[width, width];
         float kernelSum = 0;
@@ -306,6 +303,9 @@ public class TerrainGenerator : MonoBehaviour {
 
         float maxNoiseHeight = float.MinValue;
         float minNoiseHeight = float.MaxValue;
+        
+        float offsetX =  random.Next(-10000, 1000);
+        float offsetY =  random.Next(-10000, 1000);
 
         for (int x = 0; x < height; x++) {
             for (int y = 0; y < width; y++) {
@@ -314,8 +314,8 @@ public class TerrainGenerator : MonoBehaviour {
                 float noiseHeight = 0;
                 
                 for (int i = 0; i < octaves; i++) {
-                    float xNormalized = (float)x / height * frequency;
-                    float yNormalized = (float)y / width * frequency;
+                    float xNormalized = (float)x / height * frequency + offsetX;
+                    float yNormalized = (float)y / width * frequency + offsetY;
                     float perlinValue = Mathf.PerlinNoise(xNormalized, yNormalized) * 2 - 1;
                     noiseHeight += perlinValue * amplitude;
 
@@ -345,11 +345,12 @@ public class TerrainGenerator : MonoBehaviour {
 
 
     private float[,] ConvertTo2D(float[] map) {
-        float[,] map2d = new float[width, height];
-
+        float[,] map2d = new float[height, width];
+        int index = 0; 
         for (int x = 0; x < height; x++) {
             for (int y = 0; y < width; y++) {
-                map2d[x, y] = map[y * width + x];
+                map2d[x, y] = map[index];
+                index++;
             }
         }
 
@@ -397,5 +398,28 @@ public class TerrainGenerator : MonoBehaviour {
                 heightMap[x * width + y] = sum;
             }
         }
+    }
+    
+    
+    public float[] GetHeightMap() {
+        return heightMap;
+    }
+    
+    public int GetDepth() {
+        return depth;
+    }
+    
+
+    public void SetTerrainData(float[,] map) {
+        this.heightMapPlane.GetComponent<Renderer>().material.SetTexture("_BaseMap", GenerateHeightMapTexture());
+        terrain.terrainData.SetHeights(0, 0, map);
+    }
+
+    public int GetHeight() {
+        return height;
+    }
+
+    public int GetWidth() {
+        return width;
     }
 }

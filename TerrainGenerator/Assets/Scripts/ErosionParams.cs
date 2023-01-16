@@ -5,7 +5,7 @@ public class ErosionParams
 {
     // [Range(2, 8)] 
     // public int erosionRadius = 3;
-    [Range(1000, 1_000_000)] 
+    [Range(1, 1_000_000)] 
     public int erosionIterationCount = 400_000;
     
     [Range(0, 1)] 

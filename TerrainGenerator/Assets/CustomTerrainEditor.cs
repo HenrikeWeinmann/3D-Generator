@@ -22,5 +22,8 @@ public class CustomTerrainEditor : Editor
             script.ErodeMap();
         }
         
+        
+        
+        
     }
 }
