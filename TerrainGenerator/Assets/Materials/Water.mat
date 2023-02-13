@@ -8,20 +8,15 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Water
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
-  m_ValidKeywords:
-  - _SPECULAR_SETUP
-  - _SURFACE_TYPE_TRANSPARENT
+  m_Shader: {fileID: -6465566751694194690, guid: 4dca50f035c88f4408caf24aaa84227e, type: 3}
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
-  disabledShaderPasses:
-  - DepthOnly
-  - SHADOWCASTER
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -65,6 +60,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_39243532fed142f5a88c9977af81d7d8_Texture_1:
+        m_Texture: {fileID: 2800000, guid: e4ea04ee7a057214292e893561b2b726, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_c5aa94a9a16744668793e26528546f12_Texture_1:
+        m_Texture: {fileID: 2800000, guid: e4ea04ee7a057214292e893561b2b726, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -90,29 +93,36 @@ Material:
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _Cutoff: 0.5
+    - _Depth: -0.17
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _Displacement: 18.49
     - _DstBlend: 10
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
+    - _Normal_Strength: -1.42
     - _OcclusionStrength: 1
     - _Parallax: 0.005
+    - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 1
     - _SmoothnessTextureChannel: 1
     - _SpecularHighlights: 1
     - _SrcBlend: 5
+    - _Strength: 0.04
     - _Surface: 1
     - _WorkflowMode: 0
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0.2748754, g: 0.60274446, b: 0.8207547, a: 0.6509804}
-    - _Color: {r: 0.27487537, g: 0.60274446, b: 0.8207547, a: 0.6509804}
+    - _BaseColor: {r: 0.07809719, g: 0.25324467, b: 0.36792448, a: 0.8509804}
+    - _Color: {r: 0.07809716, g: 0.25324464, b: 0.36792445, a: 0.8509804}
+    - _DeepWaterColor: {r: 0.086997114, g: 0.18122604, b: 0.21698105, a: 0.84313726}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _ShallowWaterColor: {r: 0.21462265, g: 0.45190272, b: 0.5, a: 0.6666667}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &6016744635198673232

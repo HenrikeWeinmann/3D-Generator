@@ -15,6 +15,9 @@ public class TreeSpawner : MonoBehaviour {
     [Range(0, 5000)] 
     public int amountTrees;
 
+    [Range(0,1)]
+    public float maxHeight;
+
     private List<GameObject> treesList = new List<GameObject>();
     private System.Random random = new System.Random(1234);
 
@@ -35,14 +38,15 @@ public class TreeSpawner : MonoBehaviour {
         int height = terrainGenerator.height;
 
         for (int i = 0; i < amountTrees; i++) {
-            int xPos = 0; 
-            int zPos = 0;
+            int xPos; 
+            int zPos;
+            float yPos;
             do {
                xPos = random.Next(1, height - 1);
                zPos = random.Next(1, width - 1);
-            } while (!CanPlaceTree(xPos, zPos));
+               yPos = heightMap[xPos * width + zPos];
+            } while (!CanPlaceTree(xPos, zPos) || heightMap[xPos * width + zPos] > maxHeight);
             
-            float yPos = heightMap[xPos * width + zPos];
             GameObject tree = InstantiateRandomTree();
             treesList.Add(tree);
             tree.transform.position = new Vector3(zPos, yPos*terrainHeight, xPos);
