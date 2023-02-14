@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = System.Random;
 
 public class WaterGenerator : MonoBehaviour {
@@ -11,31 +12,52 @@ public class WaterGenerator : MonoBehaviour {
     public GameObject waterMapPlane;
 
     private TerrainGenerator terrainGenerator;
-    private System.Random random = new Random(1234);
+    private System.Random random ;
 
     private float[,] waterHeightMap;
 
     private int width;
     private int height;
 
-    [Range(0, 1)] public float waterLevel = 0.4f;
+    
+    [Range(1,100000)] public int seed = 12345;
+    [Range(0, 1)] public float seaLevel = 0.4f;
+    [Range(0, 1)] public float maxRiverHeight = 0.8f;
 
     [Range(1, 100)] public int amountRivers;
 
-    [Range(0, 2)] public float maxInertia;
-
-    [Range(0, 1)] public float step = 0.05f;
-
-    [Range(0, 1)] public float inertiaDecreaseFactor = 0.5f;
 
     [Range(1, 10)] public int riverWidth = 1;
 
 
+    public void Reset() {
+        terrainGenerator = terrain.GetComponent<TerrainGenerator>();
+        float[,] map = ConvertTo2D(terrainGenerator.GetHeightMap());
+        height = terrainGenerator.GetHeight();
+        width = terrainGenerator.GetWidth();
+        
+        float[,] water = new float[height, width];
+        
+        // for (int x = 0; x < height; x++) {
+        //     for (int y = 0; y < width; y++) {
+        //         water[x, y] = 0;
+        //     }
+        // }
+        waterHeightMap = water;
+        SetWaterTerrain(water);
+    }
+
     public void GenerateRiver() {
+        random = new Random(seed);
         terrainGenerator = terrain.GetComponent<TerrainGenerator>();
         float[] heightMap = terrainGenerator.GetHeightMap();
         height = terrainGenerator.GetHeight();
         width = terrainGenerator.GetWidth();
+
+        if (maxRiverHeight <= seaLevel) {
+            Debug.Log("River max height must be above sea level");
+            return;
+        }
 
         float[,] map = ConvertTo2D(heightMap);
         // int[] topCoords = RandomCoordinateAboveThreshold(map, 0.6f);
@@ -57,8 +79,8 @@ public class WaterGenerator : MonoBehaviour {
 
         for (int x = 0; x < map.GetLength(0); x++) {
             for (int y = 0; y < map.GetLength(1); y++) {
-                if (map[x, y] < waterLevel) {
-                    water[x, y] = waterLevel;
+                if (map[x, y] < seaLevel) {
+                    water[x, y] = seaLevel;
                 }
                 else if (water[x, y] > 0) {
                     water[x, y] = map[x, y];
@@ -77,7 +99,7 @@ public class WaterGenerator : MonoBehaviour {
 
 
     private void DrawRandomRiver(float[,] water, float[,] heightMap) {
-        int[] point = RandomCoordinateAboveThreshold(heightMap, 0.6f);
+        int[] point = RandomCoordinateBetweenThresholds(heightMap, seaLevel, maxRiverHeight);
         CreateRiver(water, heightMap, point);
     }
 
@@ -88,7 +110,7 @@ public class WaterGenerator : MonoBehaviour {
         float currentHeight = heightMap[x, y];
         water[x, y] = 1;
         int iteration = 0;
-        while (currentHeight > waterLevel && iteration < 100000) {
+        while (currentHeight > seaLevel && iteration < 100000) {
             iteration++;
             float maxSlope = float.MinValue;
             int[] next = {x, y};
@@ -190,13 +212,13 @@ public class WaterGenerator : MonoBehaviour {
     // }
 
 
-    public int[] RandomCoordinateAboveThreshold(float[,] map, float threshold) {
+    public int[] RandomCoordinateBetweenThresholds(float[,] map, float min, float max) {
         List<int[]> coordinates = new List<int[]>();
         int rows = map.GetLength(0);
         int columns = map.GetLength(1);
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                if (map[i, j] > threshold) {
+                if (map[i, j] > min && map[i,j] < max) {
                     coordinates.Add(new int[] { i, j });
                 }
             }

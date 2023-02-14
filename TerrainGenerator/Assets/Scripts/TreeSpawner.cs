@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TreeSpawner : MonoBehaviour {
 
-    
+    public GameObject water;
     public GameObject treePrefab;
     public GameObject treePrefab2;
     public GameObject terrain;
@@ -24,28 +24,36 @@ public class TreeSpawner : MonoBehaviour {
     private float[] heightMap;
     private float[,] waterHeightMap;
 
-    public GameObject water;
     
     public void SpawnTrees() {
         TerrainGenerator terrainGenerator = terrain.GetComponent<TerrainGenerator>();
         WaterGenerator waterGenerator = terrain.GetComponent<WaterGenerator>();
         heightMap = terrainGenerator.GetHeightMap();
         waterHeightMap = waterGenerator.GetWaterHeightMap();
-        
+        float[,] heightMap2d = terrainGenerator.GetHeightMap2D();
         
         int terrainHeight = terrainGenerator.depth;
         int width = terrainGenerator.width;
         int height = terrainGenerator.height;
 
+        if (waterGenerator.seaLevel > maxHeight) {
+            Debug.Log("Max Height must be above sea level");
+            return;
+        }
+
         for (int i = 0; i < amountTrees; i++) {
             int xPos; 
             int zPos;
             float yPos;
+            int counter = 0; 
+            
             do {
                xPos = random.Next(1, height - 1);
                zPos = random.Next(1, width - 1);
                yPos = heightMap[xPos * width + zPos];
             } while (!CanPlaceTree(xPos, zPos) || heightMap[xPos * width + zPos] > maxHeight);
+            
+            
             
             GameObject tree = InstantiateRandomTree();
             treesList.Add(tree);
@@ -78,6 +86,9 @@ public class TreeSpawner : MonoBehaviour {
         }
         this.treesList.Clear();
     }
+    
+
+    
     
 
 }

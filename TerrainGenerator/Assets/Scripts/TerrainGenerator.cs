@@ -343,6 +343,9 @@ public class TerrainGenerator : MonoBehaviour {
         return heights;
     }
 
+    public float[,] GetHeightMap2D() {
+        return ConvertTo2D(heightMap);
+    }
 
     private float[,] ConvertTo2D(float[] map) {
         float[,] map2d = new float[height, width];

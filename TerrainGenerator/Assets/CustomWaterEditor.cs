@@ -10,6 +10,10 @@ public class CustomWaterEditor : Editor
         DrawDefaultInspector();
         WaterGenerator script = (WaterGenerator)target;
         
+        if (GUILayout.Button("reset")) {
+            script.Reset();
+        }
+        
         if (GUILayout.Button("Generate River")) {
             script.GenerateRiver();
         }
