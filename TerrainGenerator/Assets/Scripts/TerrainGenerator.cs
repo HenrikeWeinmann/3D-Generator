@@ -119,22 +119,15 @@ public class TerrainGenerator : MonoBehaviour {
 
         for (int lifetime = 0; lifetime < erosionParams.maxDropletLifetime; lifetime++) {
             int dropletIndex = (int)posX * width + (int)posY;
-            float currentHeight = heightMap[dropletIndex];
 
-
-            int nodeX = (int)posX;
-            int nodeY = (int)posY;
-            float cellOffsetX = posX - nodeX;
-            float cellOffsetY = posY - nodeY;
-
-            //calculate direction of gradient
+            //calculate gradient
             float[] heightAndGradient = CalculateHeightAndGradient((int)posX, (int)posY);
             float oldHeight = heightAndGradient[0];
             float gradientX = heightAndGradient[1];
             float gradientY = heightAndGradient[2];
 
-            dirX = (dirX * erosionParams.inertia - gradientX * (1 - erosionParams.inertia));
-            dirY = (dirY * erosionParams.inertia - gradientY * (1 - erosionParams.inertia));
+            dirX = dirX * erosionParams.inertia - gradientX * (1 - erosionParams.inertia);
+            dirY = dirY * erosionParams.inertia - gradientY * (1 - erosionParams.inertia);
 
             // Normalize direction
             float len = Mathf.Sqrt(dirX * dirX + dirY * dirY);
@@ -143,53 +136,38 @@ public class TerrainGenerator : MonoBehaviour {
                 dirY /= len;
             }
 
-            //step in direction
+            //step in direction of gradient
             posX += dirX;
             posY += dirY;
 
-            // Stop simulating water if it's not moving or has flown over map edges
+            // Stop simulating water if drop not moving or moved over the map edge
             if ((dirX == 0 && dirY == 0) || posX < 0 || posX >= width - 1 || posY < 0 || posY >= height - 1) {
                 break;
             }
 
-            // Find the droplet's new height and calculate the deltaHeight
+            // Find the drops new height and calculate the height difference
             float newHeight = CalculateHeightAndGradient((int)posX, (int)posY)[0];
             float deltaHeight = newHeight - oldHeight;
 
-            // Calculate the droplet's sediment capacity (higher when moving fast down a slope and contains lots of water)
+            // Calculate the drops sediment capacity
+            // The capacity is higher when if the drop is big or moving fast 
             float sedimentCapacity = Mathf.Max(-deltaHeight * speed * water * erosionParams.sedimentCapacityFactor,
                 erosionParams.minSedimentCapacity);
 
             //decide whether to erode or deposit
             if (sediment > sedimentCapacity || deltaHeight > 0) {
-                // If moving uphill (deltaHeight > 0) try fill up to the current height, otherwise deposit a fraction of the excess sediment
-                float amountToDeposit = (deltaHeight > 0)
-                    ? Mathf.Min(deltaHeight, sediment)
-                    : (sediment - sedimentCapacity) * erosionParams.depositSpeed;
+                // If moving uphill or more sediment than capacity deposit a fraction of the sediment
+                float amountToDeposit = (deltaHeight > 0) ? Mathf.Min(deltaHeight, sediment) : (sediment - sedimentCapacity) * erosionParams.depositSpeed;
                 sediment -= amountToDeposit;
-
-
                 heightMap[dropletIndex] += amountToDeposit;
-                // heightMap[dropletIndex + 1] += amountToDeposit * cellOffsetX * (1 - cellOffsetY);
-                // heightMap[dropletIndex + width] += amountToDeposit * (1 - cellOffsetX) * cellOffsetY;
-                // heightMap[dropletIndex + width + 1] += amountToDeposit * cellOffsetX * cellOffsetY;
-
-                //TODO still buggy
-                // LocalDeposit((int)posX,(int) posY, amountToDeposit);
-            }
-            else {
-                // Erode a fraction of the droplet's current carry capacity.
-                // Clamp the erosion to the change in height so that it doesn't dig a hole in the terrain behind the droplet
+            } else {
+                // Erode a fraction of the drops current capacity
                 float amountToErode = Mathf.Min((sedimentCapacity - sediment) * erosionParams.erodeSpeed, -deltaHeight);
                 sediment += amountToErode;
-
-                //TODO erode in a bilinear way around neighbour points
                 heightMap[dropletIndex] -= amountToErode;
-
-                // TODO STILL BUGGY
-                // LocalErode((int)posX,(int)posY, amountToErode);
             }
-
+            
+            //updating the size and speed of the drop
             speed = Mathf.Sqrt(speed * speed + deltaHeight * erosionParams.gravity);
             water *= (1 - erosionParams.evaporateSpeed);
         }
@@ -265,10 +243,10 @@ public class TerrainGenerator : MonoBehaviour {
 
 
     private float[] CalculateHeightAndGradient(int posX, int posY) {
-        int coordX = (int)posX;
-        int coordY = (int)posY;
+        int coordX = posX;
+        int coordY = posY;
 
-        // Calculate droplet's offset inside the cell (0,0) = at NW node, (1,1) = at SE node
+        // Calculate drops offset inside the cell neighbourhood
         float x = posX - coordX;
         float y = posY - coordY;
 
@@ -283,11 +261,11 @@ public class TerrainGenerator : MonoBehaviour {
         // Debug.Log($"SOUTH-Value:{south}");
         // Debug.Log($"SOUTHEAST-Value:{southEast}");
 
-        // Calculate droplet's direction of flow with bilinear interpolation of height difference along the edges
+        // Calculate drops direction by bilinear interpolating the height differences
         float gradientX = (east - current) * (1 - y) + (southEast - south) * y;
         float gradientY = (south - current) * (1 - x) + (southEast - east) * x;
 
-        // Calculate height with bilinear interpolation of the heights of the nodes of the cell
+        // Calculate height with bilinear interpolation
         float height = current * (1 - x) * (1 - y) + east * x * (1 - y) + south * (1 - x) * y + southEast * x * y;
 
         // Debug.Log($"Gradient: [{gradientX}/{gradientY}], height:{height}");

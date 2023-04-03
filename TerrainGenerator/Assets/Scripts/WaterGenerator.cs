@@ -141,76 +141,7 @@ public class WaterGenerator : MonoBehaviour {
         }
     }
 
-
-
-
-
-// private void CreateRiver(float[,] water, float[,] heightMap, int[] from)
-    // {
-    //     int startX = from[0];
-    //     int startY = from[1];
-    //
-    //     int rows = heightMap.GetLength(0);
-    //     int columns = heightMap.GetLength(1);
-    //
-    //     // using a queue to store the next steps in the river flow
-    //     Queue<int[]> nextSteps = new Queue<int[]>();
-    //     nextSteps.Enqueue(from);
-    //     int counter = 0;
-    //     while (nextSteps.Count > 0 && heightMap[startX, startY] > waterLevel) {
-    //         counter++;
-    //         if (counter > 1000) {
-    //             Debug.Log("ENDED LOOP BECAUSE COUNTER REACHED LIMIT");
-    //             return;
-    //         }
-    //         int[] currentStep = nextSteps.Dequeue();
-    //         int x = currentStep[0];
-    //         int y = currentStep[1];
-    //
-    //         // mark the current point as water
-    //         water[x, y] = 1;
-    //         float currentHeight = heightMap[x, y];
-    //
-    //         //check neighbouring points, if one point is lower, add it to the queue and continue
-    //         //if no point is lower, add a random neighbour to the queue.
-    //         //make sure the neighbour is inside the map boundaries and no IndexOutOfBoundsException occurs
-    //         bool lowerNeighbourFound = false;
-    //         List<int[]> neighbours = new List<int[]>() {
-    //             new int[] {x - 1, y},
-    //             new int[] {x + 1, y},
-    //             new int[] {x, y - 1},
-    //             new int[] {x, y + 1}
-    //         };
-    //
-    //         foreach (int[] neighbour in neighbours)
-    //         {
-    //             int neighbourX = neighbour[0];
-    //             int neighbourY = neighbour[1];
-    //             if (neighbourX >= 0 && neighbourX < rows && neighbourY >= 0 && neighbourY < columns)
-    //             {
-    //                 if (heightMap[neighbourX, neighbourY] < currentHeight)
-    //                 {
-    //                     nextSteps.Enqueue(neighbour);
-    //                     lowerNeighbourFound = true;
-    //                     break;
-    //                 }
-    //             }
-    //         }
-    //
-    //         if (!lowerNeighbourFound)
-    //         {
-    //             // choose a random neighbour as long as the picked neighbour is not valid (out of bounds)
-    //             int[] randomNeighbour = null;
-    //             while (randomNeighbour == null || (randomNeighbour[0] < 0 || randomNeighbour[0] >= rows ||
-    //                                                randomNeighbour[1] < 0 || randomNeighbour[1] >= columns))
-    //             {
-    //                 randomNeighbour = neighbours[random.Next(0, neighbours.Count)];
-    //             }
-    //             nextSteps.Enqueue(randomNeighbour);
-    //         }
-    //     }
-    // }
-
+    
 
     public int[] RandomCoordinateBetweenThresholds(float[,] map, float min, float max) {
         List<int[]> coordinates = new List<int[]>();

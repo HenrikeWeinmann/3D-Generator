@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Terrain4
+  m_Name: Terrain
   m_Shader: {fileID: -6465566751694194690, guid: 01b05da85499fc248a88d6297357f81c, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -103,14 +103,14 @@ Material:
     m_Ints: []
     m_Floats:
     - _GrassBlend2: 57
-    - _Grass_Blend: 0.42
-    - _Grass_Blend_2: 0.68
+    - _Grass_Blend: 0.376
+    - _Grass_Blend_2: 0.621
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Sand_Height: 122
-    - _Sand_Transition: 37.7
-    - _Snow_Height: 310.9
-    - _Snow_Transition: -83.8
+    - _Sand_Height: 131
+    - _Sand_Transition: 53.1
+    - _Snow_Height: 308.6
+    - _Snow_Transition: -93.9
     m_Colors: []
   m_BuildTextureStacks: []
 --- !u!114 &6996269388872194902
